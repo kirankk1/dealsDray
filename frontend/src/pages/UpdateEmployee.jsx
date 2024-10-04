@@ -6,7 +6,7 @@ import {
   Select,
   TextInput,
 } from "flowbite-react";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   getDownloadURL,
   getStorage,
@@ -18,14 +18,37 @@ import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import { useNavigate, useParams } from "react-router-dom";
 
-
 export default function UpdateEmployee() {
   const [file, setFile] = useState(null);
   const [imageUploadProgress, setImageUploadProgress] = useState(null);
   const [imageUploadError, setImageUploadError] = useState(null);
   const [publishError, setPublishError] = useState(null);
   const [formData, setFormData] = useState({});
+  const [loading, setLoading] = useState(true); // Add loading state
   const navigate = useNavigate();
+  const { id } = useParams(); // Get the employee ID from the URL
+
+  // Fetch employee data by ID when component loads
+  useEffect(() => {
+    const fetchEmployee = async () => {
+      try {
+        const res = await fetch(`/api/post/getemployee/${id}`);
+        const data = await res.json();
+        if (res.ok) {
+          setFormData(data.post); // Populate form with employee data
+          setLoading(false); // Set loading to false once data is fetched
+        } else {
+          console.error(data.message);
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error("Error fetching employee:", error.message);
+        setLoading(false);
+      }
+    };
+
+    fetchEmployee();
+  }, [id]);
 
   const handleUploadImage = async () => {
     if (!file) {
@@ -67,15 +90,20 @@ export default function UpdateEmployee() {
       !formData.number ||
       !formData.designation ||
       !formData.gender ||
-      !formData.course || !formData.imageUrl
+      !formData.course ||
+      !formData.imageUrl
     ) {
       setPublishError("Please fill in all required fields.");
       return;
     }
     try {
-      const res = await fetch(`/api/post/create`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch(`/api/post/employee/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
         body: JSON.stringify(formData),
       });
       const data = await res.json();
@@ -89,9 +117,13 @@ export default function UpdateEmployee() {
       }
     } catch (error) {
       console.error(error);
-      setPublishError("Failed to create employee");
+      setPublishError("Failed to update employee");
     }
   };
+
+  if (loading) {
+    return <div>Loading...</div>; 
+  }
 
   return (
     <div className="">
@@ -111,6 +143,7 @@ export default function UpdateEmployee() {
                 name="name"
                 placeholder="Enter employee Name"
                 id="name"
+                value={formData.name || ""} // Pre-fill form field with old data
                 onChange={(e) =>
                   setFormData({ ...formData, name: e.target.value })
                 }
@@ -127,6 +160,7 @@ export default function UpdateEmployee() {
                 name="email"
                 placeholder="example@gmail.com"
                 id="email"
+                value={formData.email || ""} // Pre-fill form field with old data
                 onChange={(e) =>
                   setFormData({ ...formData, email: e.target.value })
                 }
@@ -143,6 +177,7 @@ export default function UpdateEmployee() {
                 name="number"
                 placeholder="9213456789"
                 id="number"
+                value={formData.number || ""} // Pre-fill form field with old data
                 onChange={(e) =>
                   setFormData({ ...formData, number: e.target.value })
                 }
@@ -159,6 +194,7 @@ export default function UpdateEmployee() {
                 name="designation"
                 placeholder="HR/Manager/Sales"
                 id="designation"
+                value={formData.designation || ""} // Pre-fill form field with old data
                 onChange={(e) =>
                   setFormData({ ...formData, designation: e.target.value })
                 }
@@ -173,6 +209,7 @@ export default function UpdateEmployee() {
               <Select
                 id="gender"
                 name="gender"
+                value={formData.gender || ""} // Pre-fill form field with old data
                 onChange={(e) =>
                   setFormData({ ...formData, gender: e.target.value })
                 }
@@ -194,6 +231,7 @@ export default function UpdateEmployee() {
                 name="course"
                 placeholder="MCA/BCA/BSC"
                 id="course"
+                value={formData.course || ""} // Pre-fill form field with old data
                 onChange={(e) =>
                   setFormData({ ...formData, course: e.target.value })
                 }
@@ -235,23 +273,21 @@ export default function UpdateEmployee() {
             {formData.imageUrl && (
               <img
                 src={formData.imageUrl}
-                alt="upload"
-                className="w-full h-72 object-cover"
+                alt="Uploaded"
+                className="w-20 h-20 mt-3"
               />
             )}
-            {/* Submit */}
+          </div>
+          <div className="mt-4">
             <Button
               type="submit"
-              gradientDuoTone="greenToBlue"
+              gradientDuoTone="purpleToBlue"
+              size="lg"
               className="w-full"
             >
-              Create Employee
+              Update
             </Button>
-            {publishError && (
-              <Alert className="mt-5" color="failure">
-                {publishError}
-              </Alert>
-            )}
+            {publishError && <Alert color="failure">{publishError}</Alert>}
           </div>
         </form>
       </div>

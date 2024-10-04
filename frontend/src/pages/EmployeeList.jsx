@@ -1,13 +1,14 @@
 import { Button, Label, Table, TextInput, Select } from "flowbite-react";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function EmployeeList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("name");
   const { currentUser } = useSelector((state) => state.user);
   const [employees, setEmployees] = useState([]);
+  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -59,6 +60,10 @@ export default function EmployeeList() {
         return a.designation.localeCompare(b.designation);
       return 0;
     });
+
+    const handleEdit =(employeeId)=>{
+      navigate(`/update-employee/${employeeId}`);
+    }
 
   return (
     <div className="flex p-3">
@@ -131,7 +136,7 @@ export default function EmployeeList() {
                       {new Date(employee.createdAt).toLocaleDateString()}
                     </Table.Cell>
                     <Table.Cell className="flex gap-2">
-                      <Button>Edit</Button>
+                      <Button onClick={()=> handleEdit(employee._id)} >Edit</Button>
                       <Button color="failure">Delete</Button>
                     </Table.Cell>
                   </Table.Row>

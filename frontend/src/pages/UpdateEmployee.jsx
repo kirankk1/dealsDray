@@ -23,26 +23,41 @@ export default function UpdateEmployee() {
   const [imageUploadProgress, setImageUploadProgress] = useState(null);
   const [imageUploadError, setImageUploadError] = useState(null);
   const [publishError, setPublishError] = useState(null);
-  const [formData, setFormData] = useState({});
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    number: '',
+    designation: '',
+    gender: '',
+    course: '',
+    imageUrl: ''
+  });
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const { id } = useParams(); // Get the employee ID from the URL
+  const { id } = useParams();
 
-  // Fetch employee data by ID when component loads
   useEffect(() => {
     const fetchEmployee = async () => {
       try {
         const res = await fetch(`/api/post/getemployee/${id}`);
         const data = await res.json();
         if (res.ok) {
-          setFormData(data.post); // Populate form with employee data
-          setLoading(false); // Set loading to false once data is fetched
+          setFormData({
+            name: data.post.name,
+            email: data.post.email,
+            number: data.post.number,
+            designation: data.post.designation,
+            gender: data.post.gender,
+            course: data.post.course,
+            imageUrl: data.post.imageUrl || '' // Ensure imageUrl is set correctly
+          });
+          setLoading(false);
         } else {
           console.error(data.message);
           setLoading(false);
         }
       } catch (error) {
-        console.error("Error fetching employee:", error.message);
+        console.log(error.message);
         setLoading(false);
       }
     };
@@ -76,7 +91,7 @@ export default function UpdateEmployee() {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           setImageUploadProgress(null);
           setImageUploadError(null);
-          setFormData({ ...formData, imageUrl: downloadURL });
+          setFormData((prevData) => ({ ...prevData, imageUrl: downloadURL }));
         });
       }
     );
@@ -84,6 +99,7 @@ export default function UpdateEmployee() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Check required fields
     if (
       !formData.name ||
       !formData.email ||
@@ -101,7 +117,6 @@ export default function UpdateEmployee() {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify(formData),
@@ -126,92 +141,77 @@ export default function UpdateEmployee() {
   }
 
   return (
-    <div className="">
+    <div>
       <div className="p-5 max-w-3xl mx-auto min-h-screen">
         <h1 className="text-center text-3xl my-7 font-semibold">
           Update Employee
         </h1>
         <form onSubmit={handleSubmit}>
           <div className="space-y-6">
-            {/* Name */}
             <div className="flex flex-col gap-1">
-              <Label htmlFor="name" className="font-semibold">
-                Name
-              </Label>
+              <Label htmlFor="name" className="font-semibold">Name</Label>
               <TextInput
                 type="text"
                 name="name"
                 placeholder="Enter employee Name"
                 id="name"
-                value={formData.name || ""} // Pre-fill form field with old data
+                value={formData.name} 
                 onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
+                  setFormData((prevData) => ({ ...prevData, name: e.target.value }))
                 }
                 className="w-full"
               />
             </div>
-            {/* Email */}
             <div className="flex flex-col gap-1">
-              <Label htmlFor="email" className="font-semibold">
-                Email
-              </Label>
+              <Label htmlFor="email" className="font-semibold">Email</Label>
               <TextInput
                 type="email"
                 name="email"
                 placeholder="example@gmail.com"
                 id="email"
-                value={formData.email || ""} // Pre-fill form field with old data
+                value={formData.email} 
                 onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
+                  setFormData((prevData) => ({ ...prevData, email: e.target.value }))
                 }
                 className="w-full"
               />
             </div>
-            {/* Number */}
             <div className="flex flex-col gap-1">
-              <Label htmlFor="number" className="font-semibold">
-                Number
-              </Label>
+              <Label htmlFor="number" className="font-semibold">Number</Label>
               <TextInput
                 type="tel"
                 name="number"
                 placeholder="9213456789"
                 id="number"
-                value={formData.number || ""} // Pre-fill form field with old data
+                value={formData.number} 
                 onChange={(e) =>
-                  setFormData({ ...formData, number: e.target.value })
+                  setFormData((prevData) => ({ ...prevData, number: e.target.value }))
                 }
                 className="w-full"
               />
             </div>
-            {/* Designation */}
             <div className="flex flex-col gap-1">
-              <Label htmlFor="designation" className="font-semibold">
-                Designation
-              </Label>
+              <Label htmlFor="designation" className="font-semibold">Designation</Label>
               <TextInput
                 type="text"
                 name="designation"
                 placeholder="HR/Manager/Sales"
                 id="designation"
-                value={formData.designation || ""} // Pre-fill form field with old data
+                value={formData.designation} 
                 onChange={(e) =>
-                  setFormData({ ...formData, designation: e.target.value })
+                  setFormData((prevData) => ({ ...prevData, designation: e.target.value }))
                 }
                 className="w-full"
               />
             </div>
-            {/* Gender */}
             <div className="flex flex-col gap-1">
-              <Label htmlFor="gender" className="font-semibold">
-                Gender
-              </Label>
+              <Label htmlFor="gender" className="font-semibold">Gender</Label>
               <Select
                 id="gender"
                 name="gender"
-                value={formData.gender || ""} // Pre-fill form field with old data
+                value={formData.gender} 
                 onChange={(e) =>
-                  setFormData({ ...formData, gender: e.target.value })
+                  setFormData((prevData) => ({ ...prevData, gender: e.target.value }))
                 }
                 className="w-full"
               >
@@ -221,24 +221,20 @@ export default function UpdateEmployee() {
                 <option value="transgender">Transgender</option>
               </Select>
             </div>
-            {/* Course */}
             <div className="flex flex-col gap-1">
-              <Label htmlFor="course" className="font-semibold">
-                Course
-              </Label>
+              <Label htmlFor="course" className="font-semibold">Course</Label>
               <TextInput
                 type="text"
                 name="course"
                 placeholder="MCA/BCA/BSC"
                 id="course"
-                value={formData.course || ""} // Pre-fill form field with old data
+                value={formData.course} 
                 onChange={(e) =>
-                  setFormData({ ...formData, course: e.target.value })
+                  setFormData((prevData) => ({ ...prevData, course: e.target.value }))
                 }
                 className="w-full"
               />
             </div>
-            {/* File Upload */}
             <div className="flex gap-3">
               <FileInput
                 type="file"
@@ -274,20 +270,13 @@ export default function UpdateEmployee() {
               <img
                 src={formData.imageUrl}
                 alt="Uploaded"
-                className="w-20 h-20 mt-3"
+                className="w-32 h-32"
               />
             )}
-          </div>
-          <div className="mt-4">
-            <Button
-              type="submit"
-              gradientDuoTone="purpleToBlue"
-              size="lg"
-              className="w-full"
-            >
-              Update
-            </Button>
             {publishError && <Alert color="failure">{publishError}</Alert>}
+            <Button type="submit" gradientDuoTone="purpleToBlue">
+              Update Employee
+            </Button>
           </div>
         </form>
       </div>

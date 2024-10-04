@@ -101,6 +101,7 @@ export default function EmployeeList() {
             <Table hoverable className="shadow-md">
               <Table.Head>
                 <Table.HeadCell>Name</Table.HeadCell>
+                <Table.HeadCell>Image</Table.HeadCell>
                 <Table.HeadCell>Email</Table.HeadCell>
                 <Table.HeadCell>Mobile Number</Table.HeadCell>
                 <Table.HeadCell>Designation</Table.HeadCell>
@@ -114,7 +115,13 @@ export default function EmployeeList() {
                 {filteredEmployees.map((employee) => (
                   <Table.Row key={employee._id}> 
                     <Table.Cell>{employee.name}</Table.Cell>
+                    <Table.Cell>
                     
+                      <img
+                        src={employee.imageUrl}
+                        className="w-20 h-10 object-cover bg-gray-500"
+                      />
+                  </Table.Cell>
                     <Table.Cell>{employee.email}</Table.Cell>
                     <Table.Cell>{employee.number}</Table.Cell>
                     <Table.Cell>{employee.designation}</Table.Cell>

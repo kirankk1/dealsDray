@@ -15,16 +15,16 @@ export default function EmployeeList() {
 
       try {
         const res = await fetch(`/api/post/getemployees`, {
-          method: 'GET',
+          method: "GET",
           headers: {
-            'Authorization': `Bearer ${currentUser.token}`, 
-            'Content-Type': 'application/json',
+            Authorization: `Bearer ${currentUser.token}`,
+            "Content-Type": "application/json",
           },
         });
 
         const data = await res.json();
         if (res.ok) {
-          setEmployees(data.posts); 
+          setEmployees(data.posts);
         } else {
           console.error(data.message);
         }
@@ -33,7 +33,7 @@ export default function EmployeeList() {
       }
     };
 
-    fetchEmployees(); 
+    fetchEmployees();
   }, [currentUser]);
 
   const handleSearchChange = (e) => {
@@ -53,8 +53,10 @@ export default function EmployeeList() {
     .sort((a, b) => {
       if (sortBy === "name") return a.name.localeCompare(b.name);
       if (sortBy === "email") return a.email.localeCompare(b.email);
-      if (sortBy === "createdAt") return new Date(a.createdAt) - new Date(b.createdAt);
-      if (sortBy === "designation") return a.designation.localeCompare(b.designation);
+      if (sortBy === "createdAt")
+        return new Date(a.createdAt) - new Date(b.createdAt);
+      if (sortBy === "designation")
+        return a.designation.localeCompare(b.designation);
       return 0;
     });
 
@@ -98,7 +100,7 @@ export default function EmployeeList() {
         </div>
         <div className="table-auto md:mx-auto p-3 overflow-x-scroll scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300">
           {currentUser && employees.length > 0 ? (
-            <Table hoverable className="shadow-md">
+            <Table hoverable className="shadow-md ">
               <Table.Head>
                 <Table.HeadCell>Name</Table.HeadCell>
                 <Table.HeadCell>Image</Table.HeadCell>
@@ -108,30 +110,28 @@ export default function EmployeeList() {
                 <Table.HeadCell>Gender</Table.HeadCell>
                 <Table.HeadCell>Course</Table.HeadCell>
                 <Table.HeadCell>Created Date</Table.HeadCell>
-                <Table.HeadCell>Edit</Table.HeadCell>
-                <Table.HeadCell>Delete</Table.HeadCell>
+                <Table.HeadCell>Action</Table.HeadCell>
               </Table.Head>
               <Table.Body>
                 {filteredEmployees.map((employee) => (
-                  <Table.Row key={employee._id}> 
+                  <Table.Row key={employee._id}>
                     <Table.Cell>{employee.name}</Table.Cell>
                     <Table.Cell>
-                    
                       <img
                         src={employee.imageUrl}
                         className="w-20 h-10 object-cover bg-gray-500"
                       />
-                  </Table.Cell>
+                    </Table.Cell>
                     <Table.Cell>{employee.email}</Table.Cell>
                     <Table.Cell>{employee.number}</Table.Cell>
                     <Table.Cell>{employee.designation}</Table.Cell>
                     <Table.Cell>{employee.gender}</Table.Cell>
                     <Table.Cell>{employee.course}</Table.Cell>
-                    <Table.Cell>{new Date(employee.createdAt).toLocaleDateString()}</Table.Cell>
                     <Table.Cell>
-                      <Button>Edit</Button>
+                      {new Date(employee.createdAt).toLocaleDateString()}
                     </Table.Cell>
-                    <Table.Cell>
+                    <Table.Cell className="flex gap-2">
+                      <Button>Edit</Button>
                       <Button color="failure">Delete</Button>
                     </Table.Cell>
                   </Table.Row>

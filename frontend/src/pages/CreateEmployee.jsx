@@ -53,7 +53,7 @@ export default function CreateEmployee() {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           setImageUploadProgress(null);
           setImageUploadError(null);
-          setFormData({ ...formData, image: downloadURL });
+          setFormData({ ...formData, imageUrl: downloadURL });
         });
       }
     );
@@ -67,7 +67,7 @@ export default function CreateEmployee() {
       !formData.number ||
       !formData.designation ||
       !formData.gender ||
-      !formData.course
+      !formData.course || !formData.imageUrl
     ) {
       setPublishError("Please fill in all required fields.");
       return;
@@ -232,9 +232,9 @@ export default function CreateEmployee() {
             {imageUploadError && (
               <Alert color="failure">{imageUploadError}</Alert>
             )}
-            {formData.image && (
+            {formData.imageUrl && (
               <img
-                src={formData.image}
+                src={formData.imageUrl}
                 alt="upload"
                 className="w-full h-72 object-cover"
               />

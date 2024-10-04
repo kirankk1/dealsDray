@@ -46,3 +46,26 @@ export const getEmployees = async (req, res, next) => {
     next(error); 
   }
 };
+
+export const updateEmployee = async (req, res, next)=>{
+  const {id} = req.params;
+
+  if(!req.user){
+    return next(errorHandler(401, 'You are not authorized to update an employee.'));
+  }
+  try {
+    const employee = await Employee.findOne({_id:id, userId:req.user.id});
+
+
+    if(!employee){
+      return next(errorHandler(404, 'Employee not found.'));
+    }
+
+    const updateEmployee = await Employee.findByIdAndUpdate(id, {
+      $set:req.body,
+    },{new:true});
+    res.status(200).json(updateEmployee);
+  } catch (error) {
+    next(error)
+  }
+}

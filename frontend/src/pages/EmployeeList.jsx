@@ -1,7 +1,9 @@
-import { Button, Label, Table, TextInput, Select } from "flowbite-react";
+import { Button, Label, Table, TextInput, Select, Modal } from "flowbite-react";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import { HiOutlineExclamationCircle } from "react-icons/hi";
+
 
 export default function EmployeeList() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -9,6 +11,9 @@ export default function EmployeeList() {
   const { currentUser } = useSelector((state) => state.user);
   const [employees, setEmployees] = useState([]);
   const navigate = useNavigate()
+  const [showModal, setShowModal] = useState(false);
+  const [employeeIdToDelete, setEmployeeIdToDelete] = useState(null);
+
 
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -64,6 +69,33 @@ export default function EmployeeList() {
     const handleEdit =(employeeId)=>{
       navigate(`/update-employee/${employeeId}`);
     }
+
+    const handleDelete = async () => {
+      if (!employeeIdToDelete) return;
+  
+      try {
+        const res = await fetch(`/api/post/employee/${employeeIdToDelete}`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${currentUser.token}`,
+            "Content-Type": "application/json",
+          },
+        });
+  
+        if (res.ok) {
+          
+          setEmployees(employees.filter((emp) => emp._id !== employeeIdToDelete));
+          setShowModal(false); 
+          setEmployeeIdToDelete(null);
+        } else {
+          const data = await res.json();
+          console.error(data.message);
+        }
+      } catch (error) {
+        console.error("Error deleting employee:", error.message);
+      }
+    };
+    
 
   return (
     <div className="flex p-3">
@@ -135,9 +167,17 @@ export default function EmployeeList() {
                     <Table.Cell>
                       {new Date(employee.createdAt).toLocaleDateString()}
                     </Table.Cell>
-                    <Table.Cell className="flex gap-2">
-                      <Button onClick={()=> handleEdit(employee._id)} >Edit</Button>
-                      <Button color="failure">Delete</Button>
+                    <Table.Cell className="flex gap-6">
+                      <span className="font-medium text-blue-500 hover:underline cursor-pointer" onClick={()=> handleEdit(employee._id)} >Edit</span>
+                      <span
+                      onClick={() => {
+                        setShowModal(true);
+                        setEmployeeIdToDelete(employee._id);
+                      }}
+                      className="font-medium text-red-500 hover:underline cursor-pointer"
+                    >
+                      Delete
+                    </span>
                     </Table.Cell>
                   </Table.Row>
                 ))}
@@ -147,6 +187,30 @@ export default function EmployeeList() {
             <p>No Employees Found</p>
           )}
         </div>
+        <Modal
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        popup
+        size="md"
+      >
+        <Modal.Header />
+        <Modal.Body>
+          <div className="text-center">
+            <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto" />
+            <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
+              Are you sure you want to delete your post?
+            </h3>
+            <div className="flex justify-center gap-4 ">
+              <Button color="failure" onClick={handleDelete} >
+                Yes, I'm sure
+              </Button>
+              <Button color="gray" onClick={() => setShowModal(false)}>
+                No, cancel
+              </Button>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
       </div>
     </div>
   );

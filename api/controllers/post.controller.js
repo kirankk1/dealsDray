@@ -82,3 +82,23 @@ export const getEmployee = async (req, res, next) => {
     next(error);
   }
 };
+
+export const deleteEmployee = async (req, res, next) => {
+  const { id } = req.params;
+
+  if (!req.user) {
+    return next(errorHandler(401, 'You are not authorized to delete an employee.'));
+  }
+  try {
+    const employee = await Employee.findOne({ _id: id, userId: req.user.id });
+
+    if (!employee) {
+      return next(errorHandler(404, 'Employee not found.'));
+    }
+
+    await Employee.findByIdAndDelete(id);
+    res.status(200).json({ message: 'Employee deleted successfully.' });
+  } catch (error) {
+    next(error);
+  }
+};

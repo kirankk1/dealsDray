@@ -270,11 +270,11 @@ export default function UpdateEmployee() {
               <img
                 src={formData.imageUrl}
                 alt="Uploaded"
-                className="w-32 h-32"
+                className="mx-auto w-1/2"
               />
             )}
             {publishError && <Alert color="failure">{publishError}</Alert>}
-            <Button type="submit" gradientDuoTone="purpleToBlue">
+            <Button type="submit" className="w-full" gradientDuoTone="purpleToBlue">
               Update Employee
             </Button>
           </div>

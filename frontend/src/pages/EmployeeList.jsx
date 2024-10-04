@@ -114,8 +114,9 @@ export default function EmployeeList() {
                 {filteredEmployees.map((employee) => (
                   <Table.Row key={employee._id}> 
                     <Table.Cell>{employee.name}</Table.Cell>
+                    
                     <Table.Cell>{employee.email}</Table.Cell>
-                    <Table.Cell>{employee.mobile}</Table.Cell>
+                    <Table.Cell>{employee.number}</Table.Cell>
                     <Table.Cell>{employee.designation}</Table.Cell>
                     <Table.Cell>{employee.gender}</Table.Cell>
                     <Table.Cell>{employee.course}</Table.Cell>

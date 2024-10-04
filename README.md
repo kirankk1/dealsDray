@@ -1,6 +1,6 @@
-# dealsDray
+# DealsDray
 
-**dealsDray** is a MERN stack web platform designed for admin use, allowing seamless management of employee data. The platform supports full CRUD (Create, Read, Update, Delete) operations, providing a streamlined user experience for maintaining employee details.
+**DealsDray** is a MERN stack web platform designed for admin use, allowing seamless management of employee data. The platform supports full CRUD (Create, Read, Update, Delete) operations, providing a streamlined user experience for maintaining employee details.
 
 ## Features
 
